@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = '/api';
 
 // State
 let currentTestCaseId = null;
@@ -36,7 +36,7 @@ function setupEventListeners() {
     priorityFilter.addEventListener('change', loadTestCases);
     statusFilter.addEventListener('change', loadTestCases);
     clearFiltersBtn.addEventListener('click', clearFilters);
-    
+
     // Close modal on outside click
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
@@ -47,20 +47,20 @@ function setupEventListeners() {
 async function loadTestCases() {
     try {
         const params = new URLSearchParams();
-        
+
         const search = searchInput.value.trim();
         const priority = priorityFilter.value;
         const status = statusFilter.value;
-        
+
         if (search) params.append('search', search);
         if (priority) params.append('priority', priority);
         if (status) params.append('status', status);
-        
+
         const url = `${API_BASE_URL}/testcases${params.toString() ? '?' + params.toString() : ''}`;
         const response = await fetch(url);
-        
+
         if (!response.ok) throw new Error('Failed to fetch test cases');
-        
+
         allTestCases = await response.json();
         renderTestCases(allTestCases);
         updateStats(allTestCases);
@@ -79,9 +79,9 @@ async function createTestCase(data) {
             },
             body: JSON.stringify(data),
         });
-        
+
         if (!response.ok) throw new Error('Failed to create test case');
-        
+
         return await response.json();
     } catch (error) {
         console.error('Error creating test case:', error);
@@ -98,9 +98,9 @@ async function updateTestCase(id, data) {
             },
             body: JSON.stringify(data),
         });
-        
+
         if (!response.ok) throw new Error('Failed to update test case');
-        
+
         return await response.json();
     } catch (error) {
         console.error('Error updating test case:', error);
@@ -113,9 +113,9 @@ async function deleteTestCase(id) {
         const response = await fetch(`${API_BASE_URL}/testcases/${id}`, {
             method: 'DELETE',
         });
-        
+
         if (!response.ok) throw new Error('Failed to delete test case');
-        
+
         return true;
     } catch (error) {
         console.error('Error deleting test case:', error);
@@ -130,10 +130,10 @@ function renderTestCases(testCases) {
         emptyState.style.display = 'block';
         return;
     }
-    
+
     testCasesGrid.style.display = 'grid';
     emptyState.style.display = 'none';
-    
+
     testCasesGrid.innerHTML = testCases.map(tc => createTestCaseCard(tc)).join('');
 }
 
@@ -143,7 +143,7 @@ function createTestCaseCard(testCase) {
         month: 'short',
         day: 'numeric'
     });
-    
+
     return `
         <div class="test-case-card">
             <div class="card-header">
@@ -180,7 +180,7 @@ function updateStats(testCases) {
     const draft = testCases.filter(tc => tc.status === 'Draft').length;
     const ready = testCases.filter(tc => tc.status === 'Ready').length;
     const automated = testCases.filter(tc => tc.status === 'Automated').length;
-    
+
     document.getElementById('totalCount').textContent = total;
     document.getElementById('draftCount').textContent = draft;
     document.getElementById('readyCount').textContent = ready;
@@ -189,7 +189,7 @@ function updateStats(testCases) {
 
 function openModal(testCase = null) {
     currentTestCaseId = testCase?.id || null;
-    
+
     if (testCase) {
         modalTitle.textContent = 'Edit Test Case';
         submitBtn.textContent = 'Update Test Case';
@@ -199,7 +199,7 @@ function openModal(testCase = null) {
         submitBtn.textContent = 'Create Test Case';
         testCaseForm.reset();
     }
-    
+
     modal.classList.add('active');
 }
 
@@ -220,7 +220,7 @@ function populateForm(testCase) {
 
 async function handleSubmit(e) {
     e.preventDefault();
-    
+
     const formData = {
         feature_name: document.getElementById('featureName').value.trim(),
         title: document.getElementById('title').value.trim(),
@@ -229,11 +229,11 @@ async function handleSubmit(e) {
         priority: document.getElementById('priority').value,
         status: document.getElementById('status').value,
     };
-    
+
     try {
         submitBtn.disabled = true;
         submitBtn.textContent = currentTestCaseId ? 'Updating...' : 'Creating...';
-        
+
         if (currentTestCaseId) {
             await updateTestCase(currentTestCaseId, formData);
             showSuccess('Test case updated successfully!');
@@ -241,7 +241,7 @@ async function handleSubmit(e) {
             await createTestCase(formData);
             showSuccess('Test case created successfully!');
         }
-        
+
         closeModal();
         await loadTestCases();
     } catch (error) {
