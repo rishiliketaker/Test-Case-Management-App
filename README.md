@@ -86,9 +86,9 @@ Each test case includes:
    ```
 
 2. **Access the application**
-   - **Web Interface**: Open your browser and navigate to `http://localhost:8000`
+   - **Web Interface**: Open your browser and navigate to `https://test-case-manager-ij1l.onrender.com/`
    - **API Documentation (Swagger)**: `http://localhost:8000/docs`
-   - **Alternative API Docs (ReDoc)**: `http://localhost:8000/redoc`
+   - **Alternative API Docs (ReDoc)**: `https://test-case-manager-ij1l.onrender.com/`
 
 The `--reload` flag enables auto-reload during development. Remove it for production use.
 
