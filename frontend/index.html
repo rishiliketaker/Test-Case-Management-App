@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Test Case Management System - Create, manage, and track test cases efficiently">
+    <title>Test Case Manager | SDET Tool</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#gradient1)" />
+                        <path d="M9 16L14 21L23 11" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <defs>
+                            <linearGradient id="gradient1" x1="0" y1="0" x2="32" y2="32">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h1>Test Case Manager</h1>
+                </div>
+                <button class="btn btn-primary" id="createBtn">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    Create Test Case
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="search-box">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2" />
+                        <path d="M14 14L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search test cases...">
+                </div>
+
+                <div class="filter-group">
+                    <label for="priorityFilter">Priority:</label>
+                    <select id="priorityFilter" class="filter-select">
+                        <option value="">All Priorities</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="statusFilter">Status:</label>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Statuses</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Ready">Ready</option>
+                        <option value="Automated">Automated</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-secondary" id="clearFiltersBtn">Clear Filters</button>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section" id="statsSection">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">Total Test Cases</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="draftCount">0</div>
+                    <div class="stat-label">Draft</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="readyCount">0</div>
+                    <div class="stat-label">Ready</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="automatedCount">0</div>
+                    <div class="stat-label">Automated</div>
+                </div>
+            </div>
+
+            <!-- Test Cases Grid -->
+            <div class="test-cases-grid" id="testCasesGrid">
+                <!-- Test case cards will be dynamically inserted here -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                    <circle cx="60" cy="60" r="50" fill="url(#emptyGradient)" opacity="0.1" />
+                    <path d="M40 60L55 75L80 45" stroke="url(#emptyGradient)" stroke-width="4" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <defs>
+                        <linearGradient id="emptyGradient" x1="0" y1="0" x2="120" y2="120">
+                            <stop offset="0%" stop-color="#667eea" />
+                            <stop offset="100%" stop-color="#764ba2" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h2>No Test Cases Found</h2>
+                <p>Create your first test case to get started</p>
+                <button class="btn btn-primary" onclick="document.getElementById('createBtn').click()">
+                    Create Test Case
+                </button>
+            </div>
+        </main>
+
+        <!-- Modal for Create/Edit -->
+        <div class="modal" id="testCaseModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Create Test Case</h2>
+                    <button class="close-btn" id="closeModalBtn">&times;</button>
+                </div>
+                <form id="testCaseForm">
+                    <div class="form-group">
+                        <label for="featureName">Feature Name *</label>
+                        <input type="text" id="featureName" required placeholder="e.g., User Authentication">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">Test Case Title *</label>
+                        <input type="text" id="title" required placeholder="e.g., Verify login with valid credentials">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="priority">Priority *</label>
+                            <select id="priority" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Status *</label>
+                            <select id="status" required>
+                                <option value="Draft" selected>Draft</option>
+                                <option value="Ready">Ready</option>
+                                <option value="Automated">Automated</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="steps">Test Steps *</label>
+                        <textarea id="steps" required rows="5"
+                            placeholder="1. Navigate to login page&#10;2. Enter valid username&#10;3. Enter valid password&#10;4. Click login button"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expectedResult">Expected Result *</label>
+                        <textarea id="expectedResult" required rows="3"
+                            placeholder="User should be successfully logged in and redirected to dashboard"></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Create Test Case</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
